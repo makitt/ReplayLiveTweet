@@ -16,6 +16,10 @@ Google App Engine を利用。
 5. 録音した番組を再生し、番組が始まったら［Play］ボタンをクリックする。
 6. 中断したいときは［Pause］ボタンをクリック。再生してる番組も一緒に停めないと再開したときにずれる。
 
+## ToDo
+* 取得したデータを保存する
+* 保存したデータを使って再生する
+
 ## Replay Live Tweet の設置
 application.txt に Consumer key と Consumer secret を1行でカンマ区切りで記入してください。
 
