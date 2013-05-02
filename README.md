@@ -1,7 +1,5 @@
 # Replay Live Tweet
-番組のハッシュタグと放映された日時でツイートを検索し、その時刻のツイートを再生します。
-
-録音したラジオ番組などを聴くときに一緒に再生すると、放映時の実況ツイートを見ながら聴けます。
+番組のハッシュタグと放映された日時でツイートを検索し、その時間帯のツイートを時刻通りに表示します。録音したラジオ番組などを聴くときに一緒に使うと、放送時の実況ツイートを見ながら聴けます。
 
 ## サイト
 Google App Engine を利用。
@@ -9,20 +7,21 @@ Google App Engine を利用。
 [replaylivetweet.appspot.com](http://replaylivetweet.appspot.com/)
 
 ## Replay Live Tweet の使い方
-1. 検索したいハッシュタグを入力。AND（または空白）、OR あり
-2. 番組の放映日時を入力。番組の長さは6時間まで。書式にエラーがあると［Search］ボタンが有効にならない。
-3. 検索。検索は時間指定できない（たぶん）ので、朝の番組だと遡るのに時間がかかることも。API 残数に注意。
-4. うまく取得できたら［Play］ボタンが有効になる。
-5. 録音した番組を再生し、番組が始まったら［Play］ボタンをクリックする。
-6. 中断したいときは［Pause］ボタンをクリック。再生してる番組も一緒に停めないと再開したときにずれる。
+1. 番組のハッシュタグなど検索キーワードを入力。AND（または空白）、OR あり
+2. 番組の開始日時と終了日時を入力。番組の長さは6時間まで。書式にエラーがあると［Search］ボタンが有効にならない。
+3. 検索。検索は時間指定できない（たぶん）ので、朝の番組だと遡るのに時間がかかることも。API 残数に注意。番組放映時のツイートを取得できたら［Play］ボタンが有効になる。
+4. 録音した番組を再生し、番組が始まったタイミングで［Play］ボタンをクリックする。例えば開始時刻を 10:00 に設定していたとしたら、番組が 10:00 ちょうどに始まらなくても再生番組内で 10:00 になったら［Play］をクリックする。
+5. 中断したいときは［Pause］ボタンをクリック。再生してる番組も一緒に停めないと再開したときにずれる。
+
+## 直近の更新
+* 番組開始時まで遡れなくても番組内のツイートが取得できていたら再生開始できるようにした。あと少しのところまで取得できた時もあるので
 
 ## ToDo
 * 取得したデータを保存する
 * 保存したデータを使って再生する
 
 ## Replay Live Tweet の設置
-application.txt に Consumer key と Consumer secret を1行でカンマ区切りで記入してください。
-
+自分の環境に設置する場合は application.txt に Consumer key と Consumer secret を1行でカンマ区切りで記入してください。
 application.txt.sample を書き換えてリネームすると早いです。
 
 ## License
@@ -35,16 +34,16 @@ tweepy は、Twitter REST API 1.1 の一部機能を使いたかったため以�
 ### api.py
 search のリクエスト先とパラメータ、個別ツイートの取得（テスト）時に entities を使いたかったので get\_status のパラメータに include\_entities を追加
 
-* 18 : search\_host='api.twitter.com'
-* 19 : search\_root='/1.1'
-* 94 : allowed\_param = ['id', 'trim\_user', 'include\_my\_retweet', 'include\_entities']
-* 638 : path = '/search/tweets.json'
-* 640 : allowed\_param = ['q', 'geocode', 'lang', 'locale', 'result\_type', 'count', 'until', 'since\_id', 'max\_id', 'include\_entities', 'callback']
+     18: search_host='api.twitter.com'
+     19: search_root='/1.1'
+     94: allowed_param = ['id', 'trim_user', 'include_my_retweet', 'include_entities']
+    638: path = '/search/tweets.json'
+    640: allowed_param = ['q', 'geocode', 'lang', 'locale', 'result_type', 'count', 'until', 'since_id', 'max_id', 'include_entities', 'callback']
 
 ### binder.py
 Twitter から来る結果のヘッダに含まれる API 制限情報を使いたかったので関数の結果にヘッダ情報を含めるようにした
 
-* 179 : return result, resp
+    179: return result, resp
 
 ## Thanks
 * tweepy : [github.com](https://github.com/tweepy/tweepy)
