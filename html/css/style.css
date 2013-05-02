@@ -1,0 +1,215 @@
+@charset "utf-8";
+
+/* Header */
+h1 {
+  color: #666;
+  font-size: 120%;
+  margin: 4px;
+}
+
+/* Search */
+#search #inputs {
+  float: left;
+  margin: 0;
+  width: 370px;
+}
+
+#search p {
+  margin: 5px;
+}
+
+#search span {
+  color: #888;
+  display: inline-block;
+  text-align: center;
+  width: 20px;
+}
+
+#search #top {
+  margin-top: 0;
+}
+
+#search #query {
+  width: 340px;
+}
+
+#search #start_date,
+#search #end_date {
+  margin: 0;
+  width: 80px;
+}
+
+#search #start_time,
+#search #end_time {
+  width: 40px;
+}
+
+#search #start_time_clock,
+#search #end_time_clock {
+  vertical-align: middle;
+}
+
+#search button {
+  height: 30px;
+  width: 60px;
+}
+
+#search #testbutton {
+  display: none;
+}
+
+#search #status {
+  background-color: #ded;
+  box-shadow: 3px 3px 3px #aba inset;
+  color: #777;
+  font-size: 70%;
+  height: 80px;
+  margin: 10px;
+  padding: 2px;
+  width: auto;
+  overflow: auto;
+}
+
+#search #status p {
+  line-height: 1.1em;
+  margin: 0;
+  padding: .1em .5em;
+}
+
+/* timeline */
+#timeline #twitterlogo {
+  clear: left;
+  display: none;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#timeline #twitterlogo img {
+  border-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#timeline #twitterlogo a {
+  border-style: none;
+}
+
+#tweets .tweet {
+  border: solid 1px #ddd;
+  box-shadow: 2px 2px 2px #eee;
+  margin: 4px 10px 4px 4px;
+  overflow: hidden;
+  display: none;
+}
+
+#tweets img {
+  border-style: none;
+}
+
+#tweets .avatar {
+  float: left;
+  margin: .5em;
+  width: 52px;
+}
+
+#tweets .tweetbody {
+  margin: .5em;
+  overflow: auto;
+  width: auto;
+}
+
+#tweets .tweetbody a:hover {
+  color: #599;
+  text-decoration: underline;
+}
+
+#tweets .user {
+  float: left;
+  margin: 0;
+}
+
+#tweets .user-name a {
+  color: #555;
+  font-size: 90%;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#tweets .tweetbody .user-name-hover {
+  color: #599;
+  text-decoration: underline;
+}
+
+#tweets .user-user a,
+#tweets .tweetbody .user-user a:hover {
+  color: #888;
+  font-size: 90%;
+  text-decoration: none;
+}
+
+#tweets .datetime {
+  float: right;
+  font-size: 70%;
+  margin: 0;
+}
+
+#tweets .datetime a {
+  color: #888;
+  padding: 0;
+  text-decoration: none;
+}
+
+#tweets .text {
+  clear: left;
+  color: #333;
+  margin: 0;
+  padding: 4px 0;
+}
+
+#tweets .text a {
+  color: #599;
+  text-decoration: none;
+}
+
+#tweets .retweet {
+  color: #888;
+  font-size: 80%;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+}
+
+#tweets .retweet a {
+  color: #888;
+  text-decoration: none;
+}
+
+#tweets .retweet img {
+  vertical-align: middle;
+}
+
+/* dialog */
+#dialog {
+  display: none;
+}
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+
+/* ClockPick */
+.CP_hour {
+  font-size: 90%;
+}
+
+.CP_minute {
+  font-size: 90%;
+}
+
+/* Blank */
+#blank img {
+  border-style: none;
+  vertical-align: middle;
+}

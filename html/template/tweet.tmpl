@@ -1,0 +1,17 @@
+		  <div class="tweet" id="{{=id_str}}">
+				<div class="avatar">
+					 <a href="https://twitter.com/{{=screen_name}}" target="_blank"><img src="{{=profile_image_url}}"></a>
+				</div>
+				<div class="tweetbody">
+					 <p class="user">
+              <span class="user-name">
+                <a href="https://twitter.com/{{=screen_name}}" target="_blank">{{=name}}</a>
+              </span>
+              <span class="user-user">
+                <a href="https://twitter.com/{{=screen_name}}" target="_blank">@{{=screen_name}}</a>
+              </span>
+					 <p class="datetime"><a href="{{=tweet_url}}" target="_blank">{{=created_at}}</a>
+					 <p class="text">{{=text}}
+           <p class="retweet"><img src="../images/retweet.png" alt="retweet"> <a href="https://twitter.com/{{=retweet_screen_name}}">{{=retweet_name}}</a>さんがリツイート
+				</div>
+		  </div>

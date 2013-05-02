@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Replay Live Tweet</title>
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/overcast/jquery-ui.css">
+  <link rel="stylesheet" href="css/jquery.clockpick.1.2.9.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js"></script>
+  <script src="js/jquery.scrollTo-1.4.3.1-min.js"></script>
+  <script src="js/t.min.js"></script>
+  <script src="js/jquery.clockpick.1.2.9.min.js"></script>
+  <script src="js/jquery.dateValidate.js"></script>
+  <script src="js/jquery.timeValidate.js"></script>
+  <script src="js/jquery.cookie.js"></script>
+  <script src="js/replay.js"></script>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Replay Live Tweet</h1>
+    </header>
+    <section id="search">
+      <div id="inputs">
+        <form name="config">
+          <p id="top">
+            <input type="text" placeholder="#nichiten OR #tbs954" name="query" id="query" onkeyup="checkInputs(event.keyCode)" maxlength="256">
+          <p>
+            <input type="text" placeholder="2013/04/21" name="start_date" id="start_date" onkeyup="checkInputs(event.keyCode)" maxlength="10">
+            <input type="text" placeholder="10:00" name="start_time" id="start_time" onkeyup="checkInputs(event.keyCode)" maxlength="5">
+            <img src="images/clock-16.png" height="16" width="16" id="start_time_clock" alt="start time">
+            <span>～</span>
+            <input type="text" placeholder="2013/04/21" name="end_date" id="end_date" onkeyup="checkInputs(event.keyCode)" maxlength="10">
+            <input type="text" placeholder="11:55" name="end_time" id="end_time" onkeyup="checkInputs(event.keyCode)" maxlength="5">
+            <img src="images/clock-16.png" height="16" width="16" id="end_time_clock" alt="end time">
+          <p>
+            <button id="start_search" type="button" onclick="startSearch()">Search</button>
+            <button id="start_replay" type="button">Play</button>
+            <button id="testbutton" type="button" onclick="test()">test</button>
+        </form>
+      </div>
+      <div id="status">
+        <p>1. 検索ワードを入力　APIの残数に注意。空白は AND
+        <p>2. 番組の開始〜終了日時を入力　6時間まで
+        <p>3. 検索。Play が押せるようになったら準備OK
+        <p>4. 番組が始まった時に Play クリック
+        <p>5. 中断する場合は番組の再生を停めて Pause
+        <p>--
+      </div>
+    </section>
+    <section id="timeline">
+      <div id="twitterlogo">
+        <a href="https://twitter.com/" target="_blank"><img src="images/twitter-bird-light-bgs.png" height="20" width="20" alt="twitter"></a>
+      </div>
+      <div id="tweets"></div>
+    </section>
+    <section id="dialog">
+      <div title="Twitter での認証が必要です">
+        <p>Twitter で Replay Live Tweet を連携アプリとして認証してください。
+      </div>
+    </section>
+  </article>
+</body>
+</html>
