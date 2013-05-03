@@ -22,11 +22,11 @@ $(function() {
     if (document.URL.indexOf('localhost') > 0) debug = true;
 
     if (debug) {
-        document.config.query.value = '#nhk';
-        document.config.start_date.value = '2013/5/3';
-        document.config.start_time.value = '7:14';
-        document.config.end_date.value = '2013/5/3';
-        document.config.end_time.value = '7:15';
+        document.config.query.value = '#nichiten';
+        document.config.start_date.value = '2013/4/28';
+        document.config.start_time.value = '10:00';
+        document.config.end_date.value = '2013/4/28';
+        document.config.end_time.value = '11:55';
         $('#testbutton').show();
     }
 
@@ -315,11 +315,10 @@ function viewTweet(countTweets) {
     // 本文内のハッシュタグにリンク設定
     // (entities に抜けがあるので暫定処理)
     tdata['text'] = tdata['text'].replace(
-        /([#＃].*?)(\n|\s|\u00A0|\u3000|:|：|、|。|#|＃|「|」|『|』|$)/g,
-        function() {
-            return '<a href="https://twitter.com/search?q=' +
-                encodeURIComponent(arguments[1]) + '&src=hash" target="_blank">' +
-                arguments[1] + '</a>' + arguments[2];
+        /[#＃][0-9a-zA-Z０-９ａ-ｚＡ-Ｚ〃々〻ぁ-ヿ一-鿆]+/g, function() {
+          return '<a href="https://twitter.com/search?q=' +
+            encodeURIComponent(arguments[0]) + '&src=hash" target="_blank">' +
+            arguments[0] + '</a>';
         }
     );
 

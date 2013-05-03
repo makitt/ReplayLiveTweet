@@ -14,7 +14,9 @@ Google App Engine を利用。
 5. 中断したいときは［Pause］ボタンをクリック。再生してる番組も一緒に停めないと再開したときにずれる。
 
 ## 直近の更新
-* 番組開始時まで遡れなくても番組内のツイートが取得できていたら再生開始できるようにした。あと少しのところまで取得できた時もあるので
+* 1.1.2 ハッシュタグ判定の正規表現を変更
+
+    `[#＃][0-9a-zA-Z０-９ａ-ｚＡ-Ｚ〃々〻ぁ-ヿ一-鿆]+`
 
 ## ToDo
 * 取得したデータを保存する
@@ -56,3 +58,6 @@ Twitter から来る結果のヘッダに含まれる API 制限情報を使い�
 * Cookie 操作 : [github.com](https://github.com/carhartl/jquery-cookie)
 * blank ページのアイコン : [www.designdeck.co.uk](http://www.designdeck.co.uk/a/1211)
 * 時計アイコン : [icones.pro](http://icones.pro/en/clock-22-png-image.html)
+
+## 更新履歴
+* 1.1.1 番組開始時まで遡れなくても番組内のツイートが取得できていたら再生開始できるようにした。あと少しのところまで取得できた時もあるので
