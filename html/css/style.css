@@ -51,7 +51,7 @@ h1 {
 
 #search button {
   height: 30px;
-  width: 60px;
+  width: 7em;
 }
 
 #search #testbutton {
@@ -74,6 +74,11 @@ h1 {
   line-height: 1.1em;
   margin: 0;
   padding: .1em .5em;
+}
+
+/* download */
+#download {
+  display: none;
 }
 
 /* timeline */

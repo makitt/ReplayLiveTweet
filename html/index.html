@@ -6,12 +6,12 @@
   <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
-  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/overcast/jquery-ui.css">
+  <link rel="stylesheet" href="css/jquery-ui-1.10.3.min.css">
   <link rel="stylesheet" href="css/jquery.clockpick.1.2.9.css">
   <link rel="stylesheet" href="css/style.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js"></script>
+  <script src="js/jquery-1.9.1.min.js"></script>
+  <script src="js/jquery-ui-1.10.3.min.js"></script>
+  <script src="js/jquery.ui.datepicker-ja.min.js"></script>
   <script src="js/jquery.scrollTo-1.4.3.1-min.js"></script>
   <script src="js/t.min.js"></script>
   <script src="js/jquery.clockpick.1.2.9.min.js"></script>
@@ -41,10 +41,11 @@
           <p>
             <button id="start_search" type="button" onclick="startSearch()">Search</button>
             <button id="start_replay" type="button">Play</button>
+            <button id="save_tweets" title="ツイートデータをセーブします" type="button" onclick="saveTweets()">Download</button>
             <button id="testbutton" type="button" onclick="test()">test</button>
         </form>
       </div>
-      <div id="status">
+      <div id="status" ondrop="onDrop(event)" ondragover="onDragOver(event)">
         <p>1. 検索ワードを入力　APIの残数に注意。空白は AND
         <p>2. 番組の開始〜終了日時を入力　6時間まで
         <p>3. 検索。Play が押せるようになったら準備OK
@@ -52,6 +53,9 @@
         <p>5. 中断する場合は番組の再生を停めて Pause
         <p>--
       </div>
+    </section>
+    <section id="download">
+        <p><a id="downloadlink" href="" onclick="startDownload()">download</a>
     </section>
     <section id="timeline">
       <div id="twitterlogo">

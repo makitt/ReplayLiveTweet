@@ -19,13 +19,14 @@ import webapp2
 import tweepy
 
 URL_CALLBACK = '/app/oauthcb'
-MAX_AGE_REQUEST = 180
-MAX_AGE_ACCESS = 60 * 60 * 24 * 30  # 30日
+MAX_AGE_REQUEST = 3  # 3分
+MAX_AGE_ACCESS = 30  # 30日
 FILE_KEYS = 'application.txt'
 
 class OAuth(webapp2.RequestHandler):
   def get(self):
     import Cookie
+    from datetime import datetime, timedelta
 
     callback = 'http://' + self.request.environ['HTTP_HOST'] + URL_CALLBACK
     (consumer_key, consumer_secret) = readKeys()
@@ -37,13 +38,14 @@ class OAuth(webapp2.RequestHandler):
       self.redirect('/blank.html')
       return
 
+    expires = datetime.now() + timedelta(minutes=MAX_AGE_REQUEST)
     monster = Cookie.SimpleCookie()
     monster['request_token_key'] = auth.request_token.key
     monster['request_token_key']['path'] = '/'
-    monster['request_token_key']['max-age'] = MAX_AGE_REQUEST
+    monster['request_token_key']['expires'] = expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
     monster['request_token_secret'] = auth.request_token.secret
     monster['request_token_secret']['path'] = '/'
-    monster['request_token_secret']['max-age'] = MAX_AGE_REQUEST
+    monster['request_token_secret']['expires'] = expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
     self.response.headers.add_header("Set-Cookie", monster['request_token_key'].output(header=''))
     self.response.headers.add_header("Set-Cookie", monster['request_token_secret'].output(header=''))
 
@@ -53,6 +55,7 @@ class OAuth(webapp2.RequestHandler):
 class OAuthCB(webapp2.RequestHandler):
   def get(self):
     import Cookie
+    from datetime import datetime, timedelta
 
     oauth_verifier = self.request.get('oauth_verifier')
     (consumer_key, consumer_secret) = readKeys()
@@ -69,13 +72,14 @@ class OAuthCB(webapp2.RequestHandler):
       self.redirect('/blank.html')
       return
 
+    expires = datetime.now() + timedelta(days=MAX_AGE_ACCESS)
     monster = Cookie.SimpleCookie()
     monster['access_token_key'] = auth.access_token.key
     monster['access_token_key']['path'] = '/'
-    monster['access_token_key']['max-age'] = MAX_AGE_ACCESS
+    monster['access_token_key']['expires'] = expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
     monster['access_token_secret'] = auth.access_token.secret
     monster['access_token_secret']['path'] = '/'
-    monster['access_token_secret']['max-age'] = MAX_AGE_ACCESS
+    monster['access_token_secret']['expires'] = expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
     self.response.headers.add_header("Set-Cookie", monster['access_token_key'].output(header=''))
     self.response.headers.add_header("Set-Cookie", monster['access_token_secret'].output(header=''))
 

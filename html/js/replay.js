@@ -6,7 +6,7 @@
 /** @const */ var URL_RATE_LIMIT_STATUS = '/app/ratelimitstatus'; // API 制限情報取得APP URL
 /** @const */ var URL_OAUTH = '/app/oauth';                       // OAuth 認証APP URL
 /** @const */ var URL_BLANK = 'blank.html';                       // OAuth をキャンセルした時のURL
-/** @const */ var TIME_SEARCH_WAIT = 500;                         // Search API への連続リクエストの間隔(ms)
+/** @const */ var TIME_SEARCH_WAIT = 250;                         // Search API への連続リクエストの間隔(ms)
 
 var tweetCreates = [];  // ツイート格納配列
 var timeNextDt = {};    // タイマーが作動する日時
@@ -22,11 +22,16 @@ $(function() {
     if (document.URL.indexOf('localhost') > 0) debug = true;
 
     if (debug) {
-        document.config.query.value = '#nichiten';
-        document.config.start_date.value = '2013/4/28';
-        document.config.start_time.value = '10:00';
-        document.config.end_date.value = '2013/4/28';
-        document.config.end_time.value = '11:55';
+        document.config.query.value = '#nhk';
+        document.config.start_date.value = '2013/5/6';
+        document.config.start_time.value = '10:18';
+        document.config.end_date.value = '2013/5/6';
+        document.config.end_time.value = '10:19';
+        // document.config.query.value = '#nichiten';
+        // document.config.start_date.value = '2013/4/21';
+        // document.config.start_time.value = '10:00';
+        // document.config.end_date.value = '2013/4/21';
+        // document.config.end_time.value = '11:55';
         $('#testbutton').show();
     }
 
@@ -66,6 +71,7 @@ $(function() {
     // ボタン状態
     checkInputs();
     $('#start_replay').prop('disabled', true);
+    $('#save_tweets').prop('disabled', true);
 
     //カレンダー・時計設定
     $('#start_date').datepicker({ onSelect: function() {
@@ -91,6 +97,18 @@ $(function() {
     $('#end_time_clock').clockpick({
         starthour: 0, endhour: 23, minutedivisions: 12, military: true,
         valuefield: 'end_time'}, checkInputs);
+
+    // File API が使用できかどうかステータスに表示
+    if (checkFileAPIFD() === '') {
+        updateStatus('ファイルドロップによるツイートデータ読込可能');
+    } else {
+        // ファイルドロップがサポートされてないのでイベント削除
+        $('#status').unbind('drop').unbind('dragover');
+    }
+
+    if (checkFileAPIDL() === '') {
+        updateStatus('ツイートデータのダウンロード機能使用可能');
+    }
 });
 
 
@@ -130,26 +148,32 @@ function initSearch() {
     });
 }
 
-// 検索開始
-function startSearch() {
-    $('#start_search').prop('disabled', true);
-
-    // 初期化
+// 初期化
+function init() {
     if (timerId) {
         clearTimeout(timerId);
         timerId = 0;
     }
     $('#start_replay').prop('disabled', true);
     $('#start_replay').text('Play').unbind('click').bind('click', startReplay);
+    $('#save_tweets').prop('disabled', true);
     $('#twitterlogo').hide();
     $('#tweets').empty();
-    tweetCreates = [];
 
     // 開始・終了日時をセット
     timeStart = new Date(document.config.start_date.value + ' ' +
         document.config.start_time.value);
     timeEnd = new Date(document.config.end_date.value + ' ' +
         document.config.end_time.value);
+}
+
+// 検索開始
+function startSearch() {
+    $('#start_search').prop('disabled', true);
+
+    // 初期化
+    init();
+    tweetCreates = [];
 
     // 検索文字列を生成
     // until は 指定日の0時を指すので番組終了から1日後の日付にする
@@ -213,6 +237,7 @@ function getTweetData(url, count) {
                         var dt = new Date(addUTC(tweetCreates[0]['created_at']));
                         updateStatus('最古ツイート日時: ' + dt.toLocaleString());
                         $('#start_replay').prop('disabled', false);
+                        if (!checkFileAPIDL()) $('#save_tweets').prop('disabled', false);
                         return;
                     }
                 }
@@ -229,6 +254,12 @@ function getTweetData(url, count) {
                 }
                 updateStatus('ツイートデータ取得完了');
                 $('#start_replay').prop('disabled', false);
+                if (!checkFileAPIDL()) {
+                    updateStatus('ツイートデータのダウンロード可能。 ' +
+                        '※ファイル名を "お好きなファイル名.txt" にしてください。' +
+                        'データを使用するにはこの領域にファイルをドロップしてください。');
+                    $('#save_tweets').prop('disabled', false);
+                }
             }
         },
         error: function(XMLHReq, textStatus, errorThrown) {
@@ -260,29 +291,29 @@ function startReplay() {
 }
 
 // ツイートを表示して次のタイマーをセット
-function viewTweet(countTweets) {
+function viewTweet(idx) {
     // IE で日時を使えるように UTC を加える
-    tweetCreates[0]['created_at'] = addUTC(tweetCreates[0]['created_at']);
+    tweetCreates[idx]['created_at'] = addUTC(tweetCreates[idx]['created_at']);
 
     // ツイート表示用データ作成
     var tdata = {};
-    tdata['created_at'] = convLStr(tweetCreates[0]['created_at']);
-    tdata['id_str'] = tweetCreates[0]['id_str'];
-    tdata['name'] = tweetCreates[0]['user']['name'];
-    tdata['profile_image_url'] = tweetCreates[0]['user']['profile_image_url'];
-    tdata['screen_name'] = tweetCreates[0]['user']['screen_name'];
-    tdata['text'] = tweetCreates[0]['text'];
+    tdata['created_at'] = convLStr(tweetCreates[idx]['created_at']);
+    tdata['id_str'] = tweetCreates[idx]['id_str'];
+    tdata['name'] = tweetCreates[idx]['user']['name'];
+    tdata['profile_image_url'] = tweetCreates[idx]['user']['profile_image_url'];
+    tdata['screen_name'] = tweetCreates[idx]['user']['screen_name'];
+    tdata['text'] = escapeHtml(tweetCreates[idx]['text']);
     tdata['tweet_url'] = 'https://twitter.com/' + tdata['screen_name'] +
         '/status/' + tdata['id_str']
     tdata['retweet_name'] = ''
     tdata['retweet_screen_name'] = ''
 
     // 公式リツイートデータの場合
-    if (typeof tweetCreates[0]['retweeted_status'] !== 'undefined') {
+    if (typeof tweetCreates[idx]['retweeted_status'] !== 'undefined') {
         tdata['retweet_name'] = tdata['name'];
         tdata['retweet_screen_name'] = tdata['screen_name'];
 
-        var rstatus = tweetCreates[0]['retweeted_status'];
+        var rstatus = tweetCreates[idx]['retweeted_status'];
         tdata['created_at'] = convLStr(addUTC(rstatus['created_at']));
         tdata['name'] = rstatus['user']['name'];
         tdata['profile_image_url'] = rstatus['user']['profile_image_url'];
@@ -294,7 +325,7 @@ function viewTweet(countTweets) {
     // (entities に抜けがあるので暫定処理)
     var rexp = new RegExp('(https?:\/\/)([\x21-\x7e]+)', 'ig');
     var rurls = tdata['text'].match(rexp);
-    var eurls = tweetCreates[0]['entities']['urls'];
+    var eurls = tweetCreates[idx]['entities']['urls'];
     if (rurls) {
         if (rurls.length > eurls.length) {  // URL の数を entities と比較する
             tdata['text'] = tdata['text'].replace(rexp,
@@ -323,7 +354,7 @@ function viewTweet(countTweets) {
     );
 
     // indices の値がばっちりになるまでお蔵入り
-    // if (tweetCreates[0]['entities']['hashtags'].length > 0) {
+    // if (tweetCreates[idx]['entities']['hashtags'].length > 0) {
     //     var htags = tweetCreates[0]['entities']['hashtags'];
     //     var text1 = '';
     //     var text2 = '';
@@ -351,48 +382,40 @@ function viewTweet(countTweets) {
     $('#tweets').prepend(tmplTweet.render(tdata));
 
     // リツイート情報を隠す
-    if (typeof tweetCreates[0]['retweeted_status'] === 'undefined') {
-        $('#' + tweetCreates[0]['id_str'] + ' .retweet').hide();
+    if (typeof tweetCreates[idx]['retweeted_status'] === 'undefined') {
+        $('#' + tweetCreates[idx]['id_str'] + ' .retweet').hide();
     }
 
     // ツイート表示
-    $('#' + tweetCreates[0]['id_str']).show(100);
-    countTweets++;
+    $('#' + tweetCreates[idx]['id_str']).show(100);
 
     // avatar hover で name を hover
-    var tid = tweetCreates[0]['id_str'];
+    var tid = tweetCreates[idx]['id_str'];
     $('#' + tid + ' .avatar a').hover(
         function() {$('#' + tid + ' .user-name a').addClass('user-name-hover');},
         function() {$('#' + tid + ' .user-name a').removeClass('user-name-hover');}
     );
 
     // screen_name hover で name を hover
-    var tid = tweetCreates[0]['id_str'];
+    var tid = tweetCreates[idx]['id_str'];
     $('#' + tid + ' .user-user a').hover(
         function() {$('#' + tid + ' .user-name a').addClass('user-name-hover');},
         function() {$('#' + tid + ' .user-name a').removeClass('user-name-hover');}
     );
 
     // 画面に表示する最大値を越えていたら一番古いツイートを消す
-    if (countTweets > MAX_TWEETS) {
-        $('.tweet:last').remove();
-        countTweets--;
-    }
+    if (idx >= MAX_TWEETS) $('.tweet:last').remove();
 
-    var timeNow = new Date(tweetCreates[0]['created_at']);
+    var timeNow = new Date(tweetCreates[idx]['created_at']);
     // 次のツイートをセット
-    if (tweetCreates.length >= 2) {
-        tweetCreates.splice(0, 1);
-
-        var timeNext = new Date(addUTC(tweetCreates[0]['created_at']));
-
-        // 次のツイートが終了日時より前ならイベントをセット
+    if (idx < tweetCreates.length - 1) {
+        idx++;
+        var timeNext = new Date(addUTC(tweetCreates[idx]['created_at']));
         var diff = timeNext - timeNow;
-        timerId = setTimeout('viewTweet(' + countTweets + ')', diff);
+        timerId = setTimeout('viewTweet(' + idx + ')', diff);
 
         // タイマーが作動する日時を格納
         setTimeNextDt(diff);
-
     } else {
         updateStatus('再生終了');
         $('#start_replay').prop('disabled', true);
@@ -422,17 +445,126 @@ function restartReplay() {
     timerId = setTimeout('viewTweet()', timeNextDiff);
 }
 
-// ステータス表示
-function updateStatus(str) {
-    $('#status').append('<p>' + str + '</p>').scrollTo('p:last', 'fast');
+// File API (ダウンロード)が使えるかチェック メッセージが入ってない = 使用可能
+function checkFileAPIDL() {
+    var mes = '';
+
+    if (!(window.File)) {
+        mes = 'このブラウザは File API をサポートしていません。';
+    } else if (!('Blob' in window)) {
+        mes = 'このブラウザは Blob オブジェクトをサポートしていません。';
+    } else if (!(window.URL)) {
+        mes = 'このブラウザは window.URL をサポートしていません。';
+    }
+
+    return mes;
 }
 
-// タイマーが作動する日時を格納
-function setTimeNextDt(diff) {
-    timeNextDt = new Date();
-    var dt = timeNextDt.getTime();
-    timeNextDt.setTime(dt + diff);
+// File API (ファイルドロップ)が使えるかチェック メッセージが入ってない = 使用可能
+function checkFileAPIFD() {
+    var mes = '';
+
+    if (!(window.File)) {
+        mes = 'このブラウザは File API をサポートしていません。';
+    }
+
+    return mes;
 }
+
+// ツイートデータのダウンロード
+function saveTweets() {
+    // 検索・番組情報を追加
+    var info = [{
+        query: $('#query').val(),
+        start_date: $('#start_date').val(),
+        start_time: $('#start_time').val(),
+        end_date: $('#end_date').val(),
+        end_time: $('#end_time').val()
+    }];
+
+    // ツイートデータの1行目に情報を加える
+    tweetCreates = info.concat(tweetCreates);
+
+    var blob = {};
+    if ('Blob' in window) {
+        blob = new Blob([JSON.stringify(tweetCreates)], {type: 'application/octet-stream'});
+    }
+
+    // ツイートデータの1行目を削除
+    tweetCreates.splice(0, 1);
+
+    // ダウンロード
+    // ie10
+    if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob,'replaylivetweet_data.txt');
+    } else {
+    var objurl = {};
+        if (window.URL) objurl = window.URL.createObjectURL;
+        $('#downloadlink').attr('href', objurl(blob)).click();
+    }
+}
+
+// ダウンロードリンクのクリックイベント
+function startDownload() {
+    window.location.href =  $('#downloadlink').attr('href');
+}
+
+// ファイルドロップイベント
+function onDrop(event) {
+    // ブラウザの通常動作を抑制
+    event.preventDefault();
+
+    var f = event.dataTransfer.files[0];
+
+    if (f.type.indexOf('text/plain') < 0) {
+        updateStatus('テキストファイルではありません。');
+        return;
+    }
+
+    var fr = new FileReader();
+    fr.onerror = function(evt) {
+      updateStatus('ファイル読込時にエラーが発生しました。');
+      return;
+    }
+
+    // 読込完了時に呼び出される
+    fr.onload = function(evt) {
+        tweetCreates = [];
+        try {
+            tweetCreates = JSON.parse(fr.result);
+        } catch(e) {
+            updateStatus('データ読込エラー: JSON 形式にパースできませんでした。');
+        }
+
+        if (typeof tweetCreates[0]['query'] === 'undefined') {
+            updateStatus('データ読込エラー: 有効なツイートデータではありません。');
+        } else { // 正常に読み込めた
+            // 検索・番組情報表示
+            $('#query').val(escapeHtml(tweetCreates[0]['query']));
+            $('#start_date').val(escapeHtml(tweetCreates[0]['start_date']));
+            $('#start_time').val(escapeHtml(tweetCreates[0]['start_time']));
+            $('#end_date').val(escapeHtml(tweetCreates[0]['end_date']));
+            $('#end_time').val(escapeHtml(tweetCreates[0]['end_time']));
+
+            //  検索・番組情報を削除
+            tweetCreates.splice(0, 1);
+
+            init();
+
+            updateStatus('ツイートデータファイル読込完了');
+            checkInputs();
+            $('#start_replay').prop('disabled', false);
+        }
+    }
+
+    fr.readAsText(f, 'utf-8');
+}
+
+// ドラッグオーバーイベント
+function onDragOver(event) {
+    // ブラウザの通常動作を抑制
+    event.preventDefault();
+ }
 
 // 入力値のチェックと search ボタンの有効/無効
 function checkInputs(keyCode) {
@@ -452,6 +584,18 @@ function checkInputs(keyCode) {
         }
     }
     $('#start_search').prop('disabled', true);
+}
+
+// ステータス表示
+function updateStatus(str) {
+    $('#status').append('<p>' + str + '</p>').scrollTo('p:last', 'fast');
+}
+
+// タイマーが作動する日時を格納
+function setTimeNextDt(diff) {
+    timeNextDt = new Date();
+    var dt = timeNextDt.getTime();
+    timeNextDt.setTime(dt + diff);
 }
 
 // IE で日時文字列を Date へ変換できるように 'UTC' を加える
@@ -481,6 +625,11 @@ function getUniqueUrls(array) {
         }
     }
     return uniqueArray;
+}
+
+// 文字列のエスケープ処理
+function escapeHtml(str) {
+    return $('<div>').text(str).html();
 }
 
 function test() {
