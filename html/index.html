@@ -3,12 +3,9 @@
 <head>
   <meta charset="utf-8">
   <title>Replay Live Tweet</title>
-  <!--[if lt IE 9]>
-    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
   <link rel="stylesheet" href="css/jquery-ui-1.10.3.min.css">
   <link rel="stylesheet" href="css/jquery.clockpick.1.2.9.css">
-  <link rel="stylesheet" href="css/style.css">
+  <script src="js/selectcss.js"></script>
   <script src="js/jquery-1.9.1.min.js"></script>
   <script src="js/jquery-ui-1.10.3.min.js"></script>
   <script src="js/jquery.ui.datepicker-ja.min.js"></script>
@@ -19,6 +16,10 @@
   <script src="js/jquery.timeValidate.js"></script>
   <script src="js/jquery.cookie.js"></script>
   <script src="js/replay.js"></script>
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <meta name="viewport" content="initial-scale=1.0, width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 <body>
   <article>
@@ -31,21 +32,27 @@
           <p id="top">
             <input type="text" placeholder="#nichiten OR #tbs954" name="query" id="query" onkeyup="checkInputs(event.keyCode)" maxlength="256">
           <p>
-            <input type="text" placeholder="2013/04/21" name="start_date" id="start_date" onkeyup="checkInputs(event.keyCode)" maxlength="10">
-            <input type="text" placeholder="10:00" name="start_time" id="start_time" onkeyup="checkInputs(event.keyCode)" maxlength="5">
-            <img src="images/clock-16.png" height="16" width="16" id="start_time_clock" alt="start time">
-            <span>～</span>
-            <input type="text" placeholder="2013/04/21" name="end_date" id="end_date" onkeyup="checkInputs(event.keyCode)" maxlength="10">
-            <input type="text" placeholder="11:55" name="end_time" id="end_time" onkeyup="checkInputs(event.keyCode)" maxlength="5">
-            <img src="images/clock-16.png" height="16" width="16" id="end_time_clock" alt="end time">
-          <p>
+            <span id="start_data">
+              <span id="start_label">開始:</span>
+              <input type="text" placeholder="2013/04/21" name="start_date" id="start_date" onkeyup="checkInputs(event.keyCode)" maxlength="10">
+              <input type="text" placeholder="10:00" name="start_time" id="start_time" onkeyup="checkInputs(event.keyCode)" maxlength="5">
+              <img src="images/clock-16.png" height="16" width="16" id="start_time_clock" alt="start time">
+            </span>
+            <span id="between">～</span>
+            <span id="end_data">
+              <span id="end_label">終了:</span>
+              <input type="text" placeholder="2013/04/21" name="end_date" id="end_date" onkeyup="checkInputs(event.keyCode)" maxlength="10">
+              <input type="text" placeholder="11:55" name="end_time" id="end_time" onkeyup="checkInputs(event.keyCode)" maxlength="5">
+              <img src="images/clock-16.png" height="16" width="16" id="end_time_clock" alt="end time">
+            </span>
+          <p id="buttons">
             <button id="start_search" type="button" onclick="startSearch()">Search</button>
             <button id="start_replay" type="button">Play</button>
             <button id="save_tweets" title="ツイートデータをセーブします" type="button" onclick="saveTweets()">Download</button>
             <button id="testbutton" type="button" onclick="test()">test</button>
         </form>
       </div>
-      <div id="status" ondrop="onDrop(event)" ondragover="onDragOver(event)">
+      <div id="status">
         <p>1. 検索ワードを入力　APIの残数に注意。空白は AND
         <p>2. 番組の開始〜終了日時を入力　6時間まで
         <p>3. 検索。Play が押せるようになったら準備OK

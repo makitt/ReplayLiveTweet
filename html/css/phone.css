@@ -1,0 +1,221 @@
+@charset "utf-8";
+
+/* Header */
+h1 {
+  color: #666;
+  font-size: 120%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Search */
+#search p {
+  margin: 4px;
+}
+
+#search #query {
+  font-size: 100%;
+  width: 95%;
+  height: 1.2em;
+  margin: 0;
+}
+
+#search #start_data,
+#search #end_data {
+  display: block;
+}
+
+#search #start_label,
+#search #end_label {
+  font-size: 60%;
+}
+
+#search #between {
+  display: none;
+}
+
+#search #start_date,
+#search #end_date {
+  font-size: 100%;
+  width: 125px;
+}
+
+#search #start_time,
+#search #end_time {
+  font-size: 100%;
+  width: 100px;
+}
+
+#search #start_time_clock,
+#search #end_time_clock {
+  display: none;
+}
+
+#search #buttons {
+  margin: 10px 0;
+  text-align: center;
+}
+
+#search button {
+  font-size: 100%;
+  height: 3em;
+  width: 145px;
+}
+
+#search #testbutton,
+#search #save_tweets {
+  display: none;
+}
+
+#search #status {
+  background-color: #ded;
+  box-shadow: 3px 3px 3px #aba inset;
+  color: #777;
+  font-size: 70%;
+  height: 80px;
+  margin: 2px 0;
+  padding: 2px;
+  width: auto;
+  overflow: auto;
+}
+
+#search #status p {
+  line-height: 1.1em;
+  margin: 0;
+  padding: .1em .5em;
+}
+
+/* download */
+#download {
+  display: none;
+}
+
+/* timeline */
+#timeline #twitterlogo {
+  display: none;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+#timeline #twitterlogo img {
+  border-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#timeline #twitterlogo a {
+  border-style: none;
+}
+
+#tweets .tweet {
+  border: solid 1px #ddd;
+  box-shadow: 2px 2px 2px #eee;
+  margin: 4px 0;
+  overflow: hidden;
+  display: none;
+}
+
+#tweets img {
+  border-style: none;
+}
+
+#tweets .avatar {
+  float: left;
+  margin: 5px;
+  width: 51px;
+}
+
+#tweets .tweetbody {
+  margin: 2px;
+  overflow: auto;
+  width: auto;
+}
+
+#tweets .tweetbody a:hover {
+  color: #599;
+  text-decoration: underline;
+}
+
+#tweets .user {
+  float: left;
+  line-height: 60%;
+  margin: 0;
+}
+
+#tweets .user-name a {
+  color: #333;
+  font-size: 60%;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#tweets .tweetbody .user-name-hover {
+  color: #599;
+  text-decoration: underline;
+}
+
+#tweets .user-user a,
+#tweets .tweetbody .user-user a:hover {
+  color: #888;
+  font-size: 50%;
+  text-decoration: none;
+}
+
+#tweets .datetime {
+  display: none;
+}
+
+#tweets .datetime_short {
+  float: right;
+  font-size: 30%;
+  margin: 0;
+}
+
+#tweets .datetime_short a {
+  color: #888;
+  padding: 0;
+  text-decoration: none;
+}
+
+#tweets .text {
+  clear: left;
+  color: #333;
+  font-size: 80%;
+  line-height: 120%;
+  margin: 0;
+  padding: 4px 0;
+}
+
+#tweets .text a {
+  color: #599;
+  text-decoration: none;
+}
+
+#tweets .retweet {
+  color: #888;
+  font-size: 50%;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+}
+
+#tweets .retweet a {
+  color: #888;
+  text-decoration: none;
+}
+
+#tweets .retweet img {
+  vertical-align: middle;
+}
+
+/* dialog */
+#dialog {
+  display: none;
+}
+
+/* Blank */
+#blank img {
+  border-style: none;
+  vertical-align: middle;
+}

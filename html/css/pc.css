@@ -18,7 +18,12 @@ h1 {
   margin: 5px;
 }
 
-#search span {
+#search #start_label,
+#search #end_label {
+  display: none;
+}
+
+#search #between {
   color: #888;
   display: inline-block;
   text-align: center;
@@ -164,6 +169,10 @@ h1 {
   color: #888;
   padding: 0;
   text-decoration: none;
+}
+
+#tweets .datetime_short {
+  display: none;
 }
 
 #tweets .text {

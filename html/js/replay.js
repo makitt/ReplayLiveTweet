@@ -7,6 +7,8 @@
 /** @const */ var URL_OAUTH = '/app/oauth';                       // OAuth 認証APP URL
 /** @const */ var URL_BLANK = 'blank.html';                       // OAuth をキャンセルした時のURL
 /** @const */ var TIME_SEARCH_WAIT = 250;                         // Search API への連続リクエストの間隔(ms)
+/** @const */ var MODE_PC = 1;                                    // 表示モード: PC
+/** @const */ var MODE_PHONE = 2;                                 // 表示モード: スマートフォン
 
 var tweetCreates = [];  // ツイート格納配列
 var timeNextDt = {};    // タイマーが作動する日時
@@ -15,6 +17,7 @@ var timeStart = {};     // 番組開始日時
 var timeEnd = {};       // 番組終了日時
 var timerId = 0;        // イベントタイマーID
 var tmplTweet = {};     // ツイート部分のテンプレート
+var mode = MODE_PC;     // 表示モード
 var debug = false;
 
 // ページ読み込み後処理
@@ -22,32 +25,43 @@ $(function() {
     if (document.URL.indexOf('localhost') > 0) debug = true;
 
     if (debug) {
-        document.config.query.value = '#nhk';
-        document.config.start_date.value = '2013/5/6';
-        document.config.start_time.value = '10:18';
-        document.config.end_date.value = '2013/5/6';
-        document.config.end_time.value = '10:19';
-        // document.config.query.value = '#nichiten';
-        // document.config.start_date.value = '2013/4/21';
-        // document.config.start_time.value = '10:00';
-        // document.config.end_date.value = '2013/4/21';
-        // document.config.end_time.value = '11:55';
+        document.config.query.value = '#nichiten';
+        document.config.start_date.value = '2013/4/21';
+        document.config.start_time.value = '10:00';
+        document.config.end_date.value = '2013/4/21';
+        document.config.end_time.value = '11:55';
         $('#testbutton').show();
     }
+
+    // PC or スマートフォン
+    if (navigator.userAgent.search(/iPhone/) >= 0) mode = MODE_PHONE;
 
     // 認証されてない場合はダイアログ表示
     if (typeof $.cookie('access_token_key') === 'undefined' ||
         typeof $.cookie('access_token_secret') === 'undefined') {
-        $('#dialog div').dialog({
-            buttons: {
-                'Go Twitter': function() {location.href = URL_OAUTH;},
-                'Cancel': function() {location.href = URL_BLANK;}
-            },
-            closeOnEscape: false,
-            dialogClass: 'no-close',
-            modal: true
-        });
-        return;
+        switch (mode) {
+            case MODE_PC:
+                $('#dialog div').dialog({
+                    buttons: {
+                        'Go Twitter': function() {location.href = URL_OAUTH;},
+                        'Cancel': function() {location.href = URL_BLANK;}
+                    },
+                    closeOnEscape: false,
+                    dialogClass: 'no-close',
+                    modal: true
+                });
+                return;
+                break;
+
+            case MODE_PHONE:
+                if (confirm($('#dialog p').text())) {
+                    location.href = URL_OAUTH;
+                } else {
+                    location.href = URL_BLANK;
+                }
+                return;
+                break;
+        }
     }
 
     // ツイート部分のテンプレートファイル読み込み
@@ -74,46 +88,66 @@ $(function() {
     $('#save_tweets').prop('disabled', true);
 
     //カレンダー・時計設定
-    $('#start_date').datepicker({ onSelect: function() {
-      if ($('#end_date').val() === '') {
-          $('#end_date').val($('#start_date').val());
-      }
-      checkInputs();
-      $('#start_time').focus();
-    }});
+    switch (mode) {
+        case MODE_PC:
+            $('#start_date').datepicker({ onSelect: function() {
+              if ($('#end_date').val() === '') {
+                  $('#end_date').val($('#start_date').val());
+              }
+              checkInputs();
+              $('#start_time').focus();
+            }});
 
-    $('#start_time_clock').clockpick({
-        starthour: 0, endhour: 23, minutedivisions: 12, military: true,
-        valuefield: 'start_time'}, checkInputs);
+            $('#start_time_clock').clockpick({
+                starthour: 0, endhour: 23, minutedivisions: 12, military: true,
+                valuefield: 'start_time'}, checkInputs);
 
-    $('#end_date').datepicker({ onSelect: function() {
-      if ($('#start_date').val() === '') {
-          $('#start_date').val($('#end_date').val());
-      }
-      checkInputs();
-      $('#end_time').focus();
-    }});
+            $('#end_date').datepicker({ onSelect: function() {
+              if ($('#start_date').val() === '') {
+                  $('#start_date').val($('#end_date').val());
+              }
+              checkInputs();
+              $('#end_time').focus();
+            }});
 
-    $('#end_time_clock').clockpick({
-        starthour: 0, endhour: 23, minutedivisions: 12, military: true,
-        valuefield: 'end_time'}, checkInputs);
+            $('#end_time_clock').clockpick({
+                starthour: 0, endhour: 23, minutedivisions: 12, military: true,
+                valuefield: 'end_time'}, checkInputs);
 
-    // File API が使用できかどうかステータスに表示
-    if (checkFileAPIFD() === '') {
-        updateStatus('ファイルドロップによるツイートデータ読込可能');
-    } else {
-        // ファイルドロップがサポートされてないのでイベント削除
-        $('#status').unbind('drop').unbind('dragover');
-    }
+            // File API が使用できかどうかステータスに表示
+            if (checkFileAPIFD() === '') {
+                updateStatus('ファイルドロップによるツイートデータ読込可能');
+            } else {
+                // ファイルドロップがサポートされてないのでイベント削除
+                $('#status').unbind('drop').unbind('dragover');
+            }
 
-    if (checkFileAPIDL() === '') {
-        updateStatus('ツイートデータのダウンロード機能使用可能');
+            if (checkFileAPIDL() === '') {
+                updateStatus('ツイートデータのダウンロード機能使用可能');
+            }
+
+            break;
+
+        case MODE_PHONE:
+            // input の形式を変更
+            $('#start_date').attr('type', 'date');
+            $('#start_time').attr('type', 'time');
+            $('#end_date').attr('type', 'date');
+            $('#end_time').attr('type', 'time');
+
+            // 書式チェックイベントを onchange で
+            $('#start_date').bind('change', checkInputs);
+            $('#start_time').bind('change', checkInputs);
+            $('#end_date').bind('change', checkInputs);
+            $('#end_time').bind('change', checkInputs);
+
+            break;
     }
 });
 
 
 // Twitter API制限情報取得
-function initSearch() {
+function getAPIStatus() {
     updateStatus('Twitter API 制限情報取得中...');
 
     $.ajax({
@@ -161,10 +195,11 @@ function init() {
     $('#tweets').empty();
 
     // 開始・終了日時をセット
-    timeStart = new Date(document.config.start_date.value + ' ' +
-        document.config.start_time.value);
-    timeEnd = new Date(document.config.end_date.value + ' ' +
-        document.config.end_time.value);
+    var dt = document.config.start_date.value.replace(/-/g, '/'); // セパレータが違う場合がある
+    timeStart = new Date(dt + ' ' + document.config.start_time.value);
+
+    dt = document.config.end_date.value.replace(/-/g, '/');
+    timeEnd = new Date(dt + ' ' + document.config.end_time.value);
 }
 
 // 検索開始
@@ -278,6 +313,7 @@ function startReplay() {
 
     // ツイッターロゴを表示
     $('#twitterlogo').show();
+    $.scrollTo('#twitterlogo');
 
     var timeNext = new Date(addUTC(tweetCreates[0]['created_at']));
 
@@ -297,11 +333,14 @@ function viewTweet(idx) {
 
     // ツイート表示用データ作成
     var tdata = {};
-    tdata['created_at'] = convLStr(tweetCreates[idx]['created_at']);
-    tdata['id_str'] = tweetCreates[idx]['id_str'];
-    tdata['name'] = tweetCreates[idx]['user']['name'];
-    tdata['profile_image_url'] = tweetCreates[idx]['user']['profile_image_url'];
-    tdata['screen_name'] = tweetCreates[idx]['user']['screen_name'];
+    tdata['created_at'] = escapeHtml(convLStr(tweetCreates[idx]['created_at']));
+    var dt = new Date(tweetCreates[idx]['created_at']);
+    tdata['created_at_short'] = ('0' + dt.getHours()).slice(-2) + ':' +
+        ('0' + dt.getMinutes()).slice(-2);
+    tdata['id_str'] = escapeHtml(tweetCreates[idx]['id_str']);
+    tdata['name'] = escapeHtml(tweetCreates[idx]['user']['name']);
+    tdata['profile_image_url'] = escapeHtml(tweetCreates[idx]['user']['profile_image_url']);
+    tdata['screen_name'] = escapeHtml(tweetCreates[idx]['user']['screen_name']);
     tdata['text'] = escapeHtml(tweetCreates[idx]['text']);
     tdata['tweet_url'] = 'https://twitter.com/' + tdata['screen_name'] +
         '/status/' + tdata['id_str']
@@ -314,11 +353,16 @@ function viewTweet(idx) {
         tdata['retweet_screen_name'] = tdata['screen_name'];
 
         var rstatus = tweetCreates[idx]['retweeted_status'];
-        tdata['created_at'] = convLStr(addUTC(rstatus['created_at']));
-        tdata['name'] = rstatus['user']['name'];
-        tdata['profile_image_url'] = rstatus['user']['profile_image_url'];
-        tdata['screen_name'] = rstatus['user']['screen_name'];
-        tdata['text'] = rstatus['text'];
+        tdata['created_at'] = escapeHtml(convLStr(addUTC(rstatus['created_at'])));
+
+        dt = new Date(addUTC(rstatus['created_at']));
+        tdata['created_at_short'] = ('0' + dt.getHours()).slice(-2) + ':' +
+            ('0' + dt.getMinutes()).slice(-2);
+
+        tdata['name'] = escapeHtml(rstatus['user']['name']);
+        tdata['profile_image_url'] = escapeHtml(rstatus['user']['profile_image_url']);
+        tdata['screen_name'] = escapeHtml(rstatus['user']['screen_name']);
+        tdata['text'] = escapeHtml(rstatus['text']);
     }
 
     // 本文内のURLにリンク設定
@@ -346,7 +390,7 @@ function viewTweet(idx) {
     // 本文内のハッシュタグにリンク設定
     // (entities に抜けがあるので暫定処理)
     tdata['text'] = tdata['text'].replace(
-        /[#＃][0-9a-zA-Z０-９ａ-ｚＡ-Ｚ〃々〻ぁ-ヿ一-鿆]+/g, function() {
+        /[#＃][0-9A-Z_a-z０-９Ａ-Ｚａ-ｚ〃々〻ぁ-ヿ一-鿆]+/g, function() {
           return '<a href="https://twitter.com/search?q=' +
             encodeURIComponent(arguments[0]) + '&src=hash" target="_blank">' +
             arguments[0] + '</a>';
@@ -574,9 +618,11 @@ function checkInputs(keyCode) {
         $('#end_date').dateValidate({required:true}) +
         $('#end_time').timeValidate({required:true});
     if (status === 5) {
-        var startDt = new Date($('#start_date').val() + ' ' + $('#start_time').val());
-        var endDt = new Date($('#end_date').val() + ' ' + $('#end_time').val());
-        // 番組が6時間以内ならOK
+        var startDt = new Date($('#start_date').val().replace(/-/g, '/') + ' ' +
+            $('#start_time').val());
+        var endDt = new Date($('#end_date').val().replace(/-/g, '/') + ' ' +
+            $('#end_time').val());
+        //  番組が6時間以内ならOK
         if (endDt > startDt && endDt - startDt <= 6 * 60 * 60 * 1000) {
             $('#start_search').prop('disabled', false);
             if (keyCode === 13) startSearch();
